@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Smart College Parking Space Finder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-navy-border">
+    <div>
+        <h2 class="h3 fw-bold mb-1 text-white">Project Overview & Capacity Analytics</h2>
+        <p class="text-secondary mb-0 small">Aggregated statistics calculated directly from <code>Parking Data.csv</code> (Target: Total Parking Spaces).</p>
+    </div>
+    <div>
+        <a href="{{ url_for('predict') }}" class="btn btn-cyan btn-sm px-3">
+            <i class="bi bi-magic me-1"></i>Predict Capacity
+        </a>
+    </div>
+</div>
+
+<!-- Key Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-2">
+        <div class="card stat-card p-3 h-100">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Total Records</div>
+            <div class="fs-3 text-white metric-number">{{ stats.total_records }}</div>
+            <div class="text-muted small mt-1">Verified rows</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card stat-card p-3 h-100">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Avg Spaces</div>
+            <div class="fs-3 text-cyan metric-number">{{ stats.avg_spaces }}</div>
+            <div class="text-muted small mt-1">Median: {{ stats.median_spaces }}</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card stat-card p-3 h-100">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Max Capacity</div>
+            <div class="fs-3 text-white metric-number">{{ stats.max_spaces }}</div>
+            <div class="text-muted small mt-1">Largest facility</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card stat-card p-3 h-100">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Min Capacity</div>
+            <div class="fs-3 text-white metric-number">{{ stats.min_spaces }}</div>
+            <div class="text-muted small mt-1">{{ stats.zero_space_count }} zero-space sites</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card stat-card p-3 h-100">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Unique Cities</div>
+            <div class="fs-3 text-white metric-number">{{ stats.unique_cities }}</div>
+            <div class="text-muted small mt-1">Across {{ stats.unique_states }} states</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card stat-card p-3 h-100">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Property Types</div>
+            <div class="fs-3 text-white metric-number">{{ stats.unique_types }}</div>
+            <div class="text-muted small mt-1">Categories</div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Breakdown Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title h6 text-white mb-0">Property Type Breakdown</h5>
+                <span class="text-secondary small">Total count: {{ stats.total_records }}</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr class="text-secondary small">
+                            <th>Property Type</th>
+                            <th class="text-end">Record Count</th>
+                            <th class="text-end">Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ptype, count in type_counts.items() %}
+                        <tr>
+                            <td class="text-white fw-medium">{{ ptype }}</td>
+                            <td class="text-end text-cyan metric-number">{{ count }}</td>
+                            <td class="text-end text-secondary metric-number">
+                                {{ ((count / stats.total_records) * 100)|round(1) }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title h6 text-white mb-0">Ownership Distribution</h5>
+                <span class="text-secondary small">Owned vs Leased</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr class="text-secondary small">
+                            <th>Ownership Category</th>
+                            <th class="text-end">Record Count</th>
+                            <th class="text-end">Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for own, count in ownership_counts.items() %}
+                        <tr>
+                            <td class="text-white fw-medium">{{ own }}</td>
+                            <td class="text-end text-cyan metric-number">{{ count }}</td>
+                            <td class="text-end text-secondary metric-number">
+                                {{ ((count / stats.total_records) * 100)|round(1) }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- State Distribution & Academic Notice -->
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card p-3">
+            <h5 class="card-title h6 text-white mb-3">Top States by Building Count</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm mb-0">
+                    <thead>
+                        <tr class="text-secondary small">
+                            <th>State Code</th>
+                            <th class="text-end">Facilities</th>
+                            <th class="text-end">Share</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for st, count in state_counts.items() %}
+                        <tr>
+                            <td class="text-white fw-medium">{{ st }}</td>
+                            <td class="text-end text-cyan metric-number">{{ count }}</td>
+                            <td class="text-end text-secondary metric-number">{{ ((count / stats.total_records) * 100)|round(1) }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card p-3 h-100 border-info border-opacity-25 bg-navy-card">
+            <h5 class="card-title h6 text-cyan mb-2">
+                <i class="bi bi-shield-exclamation me-1"></i>Key Research Distinction
+            </h5>
+            <p class="small text-secondary mb-3">
+                Standard college datasets describe built facilities and their permanent structural capacities. A machine learning model predicting <strong>Total Parking Spaces</strong> models the <em>capacity scale</em> of facilities, not real-time open spots.
+            </p>
+            <ul class="small text-secondary ps-3 mb-0">
+                <li class="mb-1"><strong>Structural Capacity:</strong> What this project models based on property features.</li>
+                <li><strong>Dynamic Occupancy:</strong> Requires real-time IoT gate sensors or camera feeds.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

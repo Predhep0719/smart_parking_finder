@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Model Performance - Smart College Parking Space Finder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-navy-border">
+    <div>
+        <h2 class="h3 fw-bold mb-1 text-white">Machine Learning Model Performance</h2>
+        <p class="text-secondary mb-0 small">Evaluation of Random Forest Regressor Pipeline on 20% holdout test set (n={{ metrics.test_count }}).</p>
+    </div>
+    <div>
+        <span class="badge text-bg-info text-dark px-3 py-2">
+            <i class="bi bi-diagram-3 me-1"></i>RandomForestRegressor (100 Trees)
+        </span>
+    </div>
+</div>
+
+<!-- Regression Metrics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="text-secondary small">Mean Absolute Error (MAE)</div>
+            <div class="fs-3 text-cyan metric-number">{{ metrics.mae }}</div>
+            <div class="text-muted small">Average spot deviation</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="text-secondary small">Root Mean Squared Error (RMSE)</div>
+            <div class="fs-3 text-white metric-number">{{ metrics.rmse }}</div>
+            <div class="text-muted small">Penalizes large errors</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="text-secondary small">Mean Squared Error (MSE)</div>
+            <div class="fs-3 text-white metric-number">{{ metrics.mse }}</div>
+            <div class="text-muted small">Quadratic loss function</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <div class="text-secondary small">R² Score (Coefficient of Determination)</div>
+            <div class="fs-3 text-cyan metric-number">{{ metrics.r2 }}</div>
+            <div class="text-muted small">Variance explained</div>
+        </div>
+    </div>
+</div>
+
+<!-- Plain Language Educational Guide -->
+<div class="card p-4 mb-4 border-info border-opacity-25 bg-navy-card">
+    <h5 class="h6 text-cyan mb-3">
+        <i class="bi bi-book me-2"></i>Understanding Regression Metrics in Simple Plain Language
+    </h5>
+    <div class="row g-3 small text-secondary">
+        <div class="col-md-6">
+            <p class="mb-2">
+                <strong class="text-white">Why not "Accuracy %"?</strong>
+                Classification models classify discrete classes (like Dog vs Cat) where predictions are either right or wrong. Parking capacity is a continuous numeric quantity (from 0 to 1,688 spaces). An error of 2 spaces on a 100-space lot is a very close estimate, so standard regression distance metrics are required instead of binary accuracy.
+            </p>
+            <p class="mb-0">
+                <strong class="text-white">MAE (Mean Absolute Error):</strong>
+                Measures the average magnitude of prediction errors in actual parking spaces. If MAE is 35, the model's prediction is, on average, within ~35 spaces of reality.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <p class="mb-2">
+                <strong class="text-white">RMSE (Root Mean Squared Error):</strong>
+                Squares each error before averaging and then takes the square root. Because errors are squared, RMSE penalizes outlier predictions heavily.
+            </p>
+            <p class="mb-0">
+                <strong class="text-white">R² (Variance Explained):</strong>
+                Ranges up to 1.0. An R² around 0.40–0.60 indicates that the property type, status, and geographical city features explain a substantial portion of structural capacity variations across facilities.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Error Distribution Summary Bands -->
+<div class="card p-3 mb-4">
+    <h5 class="card-title h6 text-white mb-3">Test Set Prediction Accuracy Intervals</h5>
+    <div class="row g-3 text-center">
+        <div class="col-md-4">
+            <div class="p-3 rounded bg-navy-dark border border-navy-border">
+                <div class="fs-4 text-cyan metric-number">{{ bands.within_10_pct }}%</div>
+                <div class="text-secondary small mt-1">Within ±10 spaces ({{ bands.within_10 }} of {{ total_test }})</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded bg-navy-dark border border-navy-border">
+                <div class="fs-4 text-white metric-number">{{ bands.within_25_pct }}%</div>
+                <div class="text-secondary small mt-1">Within ±25 spaces ({{ bands.within_25 }} of {{ total_test }})</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded bg-navy-dark border border-navy-border">
+                <div class="fs-4 text-white metric-number">{{ bands.within_50_pct }}%</div>
+                <div class="text-secondary small mt-1">Within ±50 spaces ({{ bands.within_50 }} of {{ total_test }})</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actual vs Predicted Validation Table -->
+<div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title h6 text-white mb-0">Actual vs Predicted Test Sample Table</h5>
+        <span class="text-secondary small">Showing first 30 holdout validation samples</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover table-sm align-middle mb-0">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>City, State</th>
+                    <th>Property Type</th>
+                    <th>Ownership</th>
+                    <th class="text-end">Actual Spaces</th>
+                    <th class="text-end text-cyan">Predicted Capacity</th>
+                    <th class="text-end">Abs Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in val_records %}
+                <tr>
+                    <td class="text-white">{{ r['Bldg City'] }}, {{ r['Bldg State'] }}</td>
+                    <td class="text-secondary small">{{ r['Property Type'] }}</td>
+                    <td class="text-secondary small">{{ r['Owned/Leased'] }}</td>
+                    <td class="text-end text-white fw-bold metric-number">{{ r['Actual'] }}</td>
+                    <td class="text-end text-cyan fw-bold metric-number">{{ r['Predicted'] }}</td>
+                    <td class="text-end metric-number {% if r['Absolute_Error'] <= 15 %}text-success{% elif r['Absolute_Error'] <= 40 %}text-warning{% else %}text-danger{% endif %}">
+                        ±{{ r['Absolute_Error'] }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

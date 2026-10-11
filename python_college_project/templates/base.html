@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart College Parking Space Finder{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="bg-navy-dark text-light">
+    <!-- Top Bar -->
+    <header class="navbar navbar-dark bg-navy-card border-bottom border-navy-border sticky-top px-3 py-2">
+        <div class="d-flex align-items-center gap-3">
+            <span class="fs-4 text-cyan fw-bold">
+                <i class="bi bi-p-square-fill me-2"></i>Smart Parking Finder
+            </span>
+            <span class="text-secondary d-none d-md-inline" style="font-size: 0.85rem;">
+                College Data Science Mini Project · Capacity Regression
+            </span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-secondary small">CSV: <strong>Parking Data.csv</strong></span>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-navy-card sidebar min-vh-100 border-end border-navy-border p-3">
+                <div class="position-sticky pt-2">
+                    <ul class="nav flex-column gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'dataset' %}active{% endif %}" href="{{ url_for('dataset_analysis') }}">
+                                <i class="bi bi-table me-2"></i>Dataset Analysis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'model' %}active{% endif %}" href="{{ url_for('model_performance') }}">
+                                <i class="bi bi-cpu me-2"></i>Model Performance
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'factors' %}active{% endif %}" href="{{ url_for('factor_analysis') }}">
+                                <i class="bi bi-bar-chart-steps me-2"></i>Factor Analysis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'predict' %}active{% endif %}" href="{{ url_for('predict') }}">
+                                <i class="bi bi-magic me-2"></i>Predict Capacity
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'monitor' %}active{% endif %}" href="{{ url_for('monitor') }}">
+                                <i class="bi bi-broadcast me-2"></i>Parking Monitor
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_page == 'about' %}active{% endif %}" href="{{ url_for('about') }}">
+                                <i class="bi bi-info-circle me-2"></i>About Project
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="mt-4 pt-3 border-top border-navy-border">
+                        <div class="small text-secondary mb-1">DATA SCIENCE NOTICE</div>
+                        <p class="text-muted" style="font-size: 0.75rem; line-height: 1.35;">
+                            This project models historical <em>total parking capacity</em> across property characteristics. Real-time open space identification requires dedicated IoT sensing.
+                        </p>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Factor Analysis - Smart College Parking Space Finder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-navy-border">
+    <div>
+        <h2 class="h3 fw-bold mb-1 text-white">Factor & Feature Influence Analysis</h2>
+        <p class="text-secondary mb-0 small">Empirical associations between property characteristics and parking capacity scale.</p>
+    </div>
+    <div class="btn-group btn-group-sm">
+        {% for f in allowed_factors %}
+        <a href="{{ url_for('factor_analysis', factor=f) }}" class="btn {% if current_factor == f %}btn-cyan{% else %}btn-outline-secondary{% endif %}">
+            {{ f }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card p-3 mb-4 border-info border-opacity-25 bg-navy-card">
+    <div class="d-flex align-items-start gap-2 small text-secondary">
+        <i class="bi bi-info-circle text-cyan fs-5 mt-1"></i>
+        <div>
+            <strong class="text-white">Methodological Note:</strong>
+            These statistics describe observed associations in the historical dataset. Differences in average capacity reflect historical allocation patterns, land zoning differences, and facility footprints. They should not be interpreted as absolute causal determinisms, especially for categories with small sample sizes.
+        </div>
+    </div>
+</div>
+
+<div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title h6 text-white mb-0">Analysis by: <span class="text-cyan">{{ current_factor }}</span></h5>
+        <span class="text-secondary small">Sorted by sample frequency</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>Category Name</th>
+                    <th class="text-end">Record Count (n)</th>
+                    <th class="text-end">Total Spaces</th>
+                    <th class="text-end text-cyan">Mean Capacity</th>
+                    <th class="text-end">Median</th>
+                    <th class="text-end">Max Capacity</th>
+                    <th class="text-end">Min Capacity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in factor_records %}
+                <tr>
+                    <td class="text-white fw-medium">
+                        {{ r[current_factor] }}
+                        {% if r['count'] < 10 %}
+                        <span class="badge text-bg-warning text-dark ms-2 small" style="font-size: 0.65rem;">Small sample (n={{ r['count'] }})</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end metric-number text-secondary">{{ r['count'] }}</td>
+                    <td class="text-end metric-number text-secondary">{{ r['sum'] }}</td>
+                    <td class="text-end metric-number text-cyan fw-bold fs-6">{{ r['mean'] }}</td>
+                    <td class="text-end metric-number text-white">{{ r['median'] }}</td>
+                    <td class="text-end metric-number text-white">{{ r['max'] }}</td>
+                    <td class="text-end metric-number text-muted">{{ r['min'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

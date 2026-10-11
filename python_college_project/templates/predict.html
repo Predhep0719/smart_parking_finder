@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Predict Parking Capacity - Smart College Parking Space Finder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-navy-border">
+    <div>
+        <h2 class="h3 fw-bold mb-1 text-white">Predict Total Parking Capacity</h2>
+        <p class="text-secondary mb-0 small">Run the trained Scikit-Learn Random Forest model to estimate facility capacity.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Form Column -->
+    <div class="col-lg-7">
+        <div class="card p-4">
+            <h5 class="h6 text-white mb-3">Facility Parameters</h5>
+            <form method="POST" action="{{ url_for('predict') }}">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">Bldg State</label>
+                        <select name="state" class="form-select" required>
+                            <option value="">Select State...</option>
+                            {% for s in states %}
+                            <option value="{{ s }}" {% if input_data and input_data.state == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">Bldg City</label>
+                        <select name="city" class="form-select" required>
+                            <option value="">Select City...</option>
+                            {% for c in cities %}
+                            <option value="{{ c }}" {% if input_data and input_data.city == c %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">Property Type</label>
+                        <select name="property_type" class="form-select" required>
+                            <option value="">Select Type...</option>
+                            {% for t in types %}
+                            <option value="{{ t }}" {% if input_data and input_data.property_type == t %}selected{% endif %}>{{ t }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">Bldg Status</label>
+                        <select name="status" class="form-select" required>
+                            <option value="">Select Status...</option>
+                            {% for st in statuses %}
+                            <option value="{{ st }}" {% if input_data and input_data.status == st %}selected{% endif %}>{{ st }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label text-secondary small">Owned/Leased Ownership</label>
+                        <select name="ownership" class="form-select" required>
+                            <option value="">Select Ownership...</option>
+                            {% for o in ownerships %}
+                            <option value="{{ o }}" {% if input_data and input_data.ownership == o %}selected{% endif %}>{{ o }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 pt-2">
+                        <button type="submit" class="btn btn-cyan w-100 py-2">
+                            <i class="bi bi-cpu me-1"></i>Run Random Forest Inference
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prediction Output Column -->
+    <div class="col-lg-5">
+        {% if prediction is not none %}
+        <div class="card p-4 border-info">
+            <div class="text-secondary small fw-medium text-uppercase mb-1">Inference Result</div>
+            <h5 class="text-white h6 mb-3">Predicted Total Parking Capacity</h5>
+            
+            <div class="d-flex align-items-baseline gap-2 mb-3">
+                <div class="display-4 text-cyan metric-number fw-bold">{{ prediction }}</div>
+                <div class="text-secondary">total spaces</div>
+            </div>
+
+            <div class="p-3 rounded bg-navy-dark border border-navy-border mb-3 small">
+                <div class="text-secondary fw-semibold mb-2">Evaluated Input Features:</div>
+                <div class="text-white">Location: <strong>{{ input_data.city }}, {{ input_data.state }}</strong></div>
+                <div class="text-white">Category: <strong>{{ input_data.property_type }} ({{ input_data.status }})</strong></div>
+                <div class="text-white">Tenure: <strong>{{ input_data.ownership }}</strong></div>
+            </div>
+
+            <div class="small text-secondary mb-2">
+                <strong>Model Reasoning & Context:</strong>
+                <p class="mt-1 mb-0">{{ explanation }}</p>
+            </div>
+
+            <div class="alert alert-dark border-secondary p-2 mb-0 small text-muted">
+                <i class="bi bi-shield-lock me-1"></i>
+                Output represents <strong>total physical parking capacity</strong>. It is an algorithmic estimation, not an observation of currently unoccupied bays.
+            </div>
+        </div>
+        {% else %}
+        <div class="card p-4 h-100 d-flex flex-column justify-content-center text-center">
+            <i class="bi bi-cpu fs-1 text-secondary mb-3"></i>
+            <h5 class="h6 text-white mb-2">Awaiting Parameters</h5>
+            <p class="small text-secondary mb-0">Select facility characteristics in the form and click Run to calculate estimated parking capacity.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Parking Monitor Demo - Smart College Parking Space Finder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-navy-border">
+    <div>
+        <h2 class="h3 fw-bold mb-1 text-white">Parking Occupancy Monitor (Demo)</h2>
+        <p class="text-secondary mb-0 small">Simulated real-time gate occupancy calculation tool for campus facility managers.</p>
+    </div>
+    <div>
+        <span class="badge text-bg-warning text-dark px-3 py-2 fw-semibold">
+            <i class="bi bi-broadcast me-1"></i>Simulation — Not Connected to Live Sensors
+        </span>
+    </div>
+</div>
+
+<div class="alert alert-dark border-secondary p-3 mb-4">
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-info-circle-fill text-warning fs-5"></i>
+        <div class="small text-secondary">
+            <strong class="text-white">Academic Integrity Notice:</strong>
+            Historical CSV datasets only record maximum or design capacity. Live vacancy detection requires hardware sensors (ultrasonic, geomagnetic, RFID gate counters, or computer vision). This sandbox demonstrates the software logic that processes sensor streams.
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Simulator Controls -->
+    <div class="col-lg-5">
+        <div class="card p-4 h-100">
+            <h5 class="h6 text-white mb-3">Simulation Controls</h5>
+            <form method="POST" action="{{ url_for('monitor') }}">
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">Total Facility Capacity</label>
+                    <input type="number" name="total_capacity" class="form-control" value="{{ total }}" min="1" max="5000" required>
+                    <div class="form-text text-muted small">E.g., predicted capacity or structural lot size</div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-secondary small">Simulated Occupied Spaces</label>
+                    <input type="number" name="occupied" class="form-control" value="{{ occupied }}" min="0" max="{{ total }}" required>
+                    <div class="form-text text-muted small">Vehicles currently logged in facility</div>
+                </div>
+
+                <button type="submit" class="btn btn-cyan w-100 py-2">
+                    <i class="bi bi-arrow-repeat me-1"></i>Update Simulation State
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Live Indicators -->
+    <div class="col-lg-7">
+        <div class="card p-4 h-100">
+            <h5 class="h6 text-white mb-3">Facility Occupancy Telemetry (Calculated)</h5>
+
+            <div class="row g-3 mb-4 text-center">
+                <div class="col-4">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border">
+                        <div class="text-secondary small text-uppercase">Total</div>
+                        <div class="fs-2 text-white metric-number">{{ total }}</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border">
+                        <div class="text-secondary small text-uppercase">Occupied</div>
+                        <div class="fs-2 text-warning metric-number">{{ occupied }}</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border">
+                        <div class="text-secondary small text-uppercase">Available</div>
+                        <div class="fs-2 text-cyan metric-number">{{ available }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between small text-secondary">
+                <span>Occupancy Level</span>
+                <span class="text-white fw-bold">{{ occupancy_pct }}% Filled</span>
+            </div>
+            <div class="progress mb-4" style="height: 12px; background-color: #0b1120;">
+                <div class="progress-bar {% if occupancy_pct > 85 %}bg-danger{% elif occupancy_pct > 65 %}bg-warning{% else %}bg-info{% endif %}"
+                     role="progressbar"
+                     style="width: {{ occupancy_pct }}%;"
+                     aria-valuenow="{{ occupancy_pct }}"
+                     aria-valuemin="0"
+                     aria-valuemax="100"></div>
+            </div>
+
+            <div class="p-3 rounded bg-navy-dark border border-navy-border small text-secondary">
+                <div class="fw-semibold text-white mb-1">State Equation:</div>
+                <code>Available Spaces ({{ available }}) = Total Structural Capacity ({{ total }}) - Occupied Vehicles ({{ occupied }})</code>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

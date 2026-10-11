@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}About Project - Smart College Parking Space Finder{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-navy-border">
+    <div>
+        <h2 class="h3 fw-bold mb-1 text-white">About the Project</h2>
+        <p class="text-secondary mb-0 small">Academic documentation and architecture of Smart College Parking Space Finder.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Problem Statement & Aim -->
+        <div class="card p-4 mb-4">
+            <h5 class="h6 text-cyan text-uppercase fw-semibold mb-2">1. Problem Statement</h5>
+            <p class="text-secondary small">
+                Colleges and institutional complexes frequently struggle with parking congestion, inefficient resource allocation, and inadequate infrastructure planning. Facility administrators often lack empirical statistical benchmarks to anticipate how many parking bays a property requires based on its status, building type, ownership structure, and urban geography.
+            </p>
+
+            <h5 class="h6 text-cyan text-uppercase fw-semibold mb-2 mt-3">2. Project Aim</h5>
+            <p class="text-secondary small mb-0">
+                To build an end-to-end data analytics and machine learning system that ingests historical institutional parking records, evaluates the structural determinants of parking scale, trains a non-linear regression ensemble model, and predicts facility capacity to assist in campus planning and urban management.
+            </p>
+        </div>
+
+        <!-- ML Workflow -->
+        <div class="card p-4 mb-4">
+            <h5 class="h6 text-cyan text-uppercase fw-semibold mb-3">3. Machine Learning Pipeline Architecture</h5>
+            <div class="row g-3 small text-secondary">
+                <div class="col-md-6">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border h-100">
+                        <strong class="text-white d-block mb-1">Data Preprocessing</strong>
+                        Data normalization, categorical string casing, validation of non-negative integers for spaces, missing value checking, and deduplication audit.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border h-100">
+                        <strong class="text-white d-block mb-1">Feature Encoding</strong>
+                        Scikit-learn <code>OneHotEncoder(handle_unknown='ignore')</code> in a <code>ColumnTransformer</code> to avoid data leakage while handling new cities/categories during live inference.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border h-100">
+                        <strong class="text-white d-block mb-1">Model Selection</strong>
+                        <code>RandomForestRegressor</code> (100 decision trees) leveraging bagging (bootstrap aggregating) to handle non-linear combinations of categorical features.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded bg-navy-dark border border-navy-border h-100">
+                        <strong class="text-white d-block mb-1">Validation Metrics</strong>
+                        80/20 train/test split evaluated using MAE, MSE, RMSE, and R² variance explained (avoiding classification accuracy misapplications).
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Limitations & Future Work -->
+        <div class="card p-4">
+            <h5 class="h6 text-cyan text-uppercase fw-semibold mb-2">4. Current Limitations & Real-Time Boundary</h5>
+            <p class="text-secondary small">
+                Historical CSV dataset records describe the <strong>installed structural capacity</strong> of sites. While machine learning effectively identifies typical parking requirements for given facility attributes, historical data alone <em>cannot predict live vacancy</em> without physical hardware.
+            </p>
+
+            <h5 class="h6 text-cyan text-uppercase fw-semibold mb-2 mt-3">5. Future Scope & Hardware Integration</h5>
+            <ul class="text-secondary small ps-3 mb-0">
+                <li class="mb-1"><strong>Ultrasonic / Geomagnetic Sensors:</strong> In-ground IoT sensors reporting spot occupancy over LoRaWAN or MQTT.</li>
+                <li class="mb-1"><strong>Edge Computer Vision:</strong> YOLO-based parking lot camera feeds counting vacant stalls.</li>
+                <li><strong>Gate Telemetry:</strong> Automatic barrier RFID/ANPR scanners computing <code>Available = Capacity - Occupied</code> in real time.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tech Stack Column -->
+    <div class="col-lg-4">
+        <div class="card p-4 mb-4">
+            <h5 class="h6 text-white mb-3">Technology Stack</h5>
+            <ul class="list-unstyled small text-secondary mb-0">
+                <li class="mb-2"><strong class="text-white">Language:</strong> Python 3.10+</li>
+                <li class="mb-2"><strong class="text-white">Framework:</strong> Flask</li>
+                <li class="mb-2"><strong class="text-white">Data Analysis:</strong> Pandas, NumPy</li>
+                <li class="mb-2"><strong class="text-white">Machine Learning:</strong> Scikit-learn (RandomForestRegressor)</li>
+                <li class="mb-2"><strong class="text-white">Frontend:</strong> HTML5, CSS3, JavaScript, Bootstrap 5</li>
+                <li><strong class="text-white">Storage:</strong> Direct CSV ingestion (No DB required)</li>
+            </ul>
+        </div>
+
+        <div class="card p-4">
+            <h5 class="h6 text-white mb-3">Dataset Specifications</h5>
+            <div class="small text-secondary">
+                <div class="mb-1"><strong>Filename:</strong> <code>Parking Data.csv</code></div>
+                <div class="mb-1"><strong>Rows:</strong> 1,312 records</div>
+                <div class="mb-1"><strong>Target:</strong> <code>Total Parking Spaces</code></div>
+                <div class="mb-1"><strong>Features:</strong> 5 categorical descriptors</div>
+                <div><strong>Source:</strong> Historical Institutional Property Records</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

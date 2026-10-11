@@ -1,0 +1,6 @@
+{
+  "name": "Smart College Parking Space Finder",
+  "description": "Data science analytics and machine learning application for predicting total parking capacity across institutions and facilities using Random Forest regression.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
